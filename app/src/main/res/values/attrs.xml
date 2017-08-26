@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="MedianView">
+        <attr name="circleRadius" format="dimension" />
+        <attr name="customPadding" format="dimension" />
+        <attr name="headerColor" format="color" />
+        <attr name="footerColor" format="color" />
+    </declare-styleable>
+    <declare-styleable name="PassCardLayout">
+        <attr name="headerColor" />
+        <attr name="footerColor" />
+        <attr name="headerLayout" format="reference" />
+        <attr name="footerLayout" format="reference" />
+    </declare-styleable>
+    <declare-styleable name="PassCardLayout2">
+        <attr name="headerLayout"/>
+        <attr name="footerLayout" />
+    </declare-styleable>
+</resources>
