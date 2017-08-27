@@ -52,6 +52,10 @@ public class FooterView extends FrameLayout {
         setWillNotDraw(false);
     }
 
+    public void setColor(int color) {
+        paint.setColor(color);
+    }
+
     @Override
     public void draw(Canvas canvas) {
         Bitmap offscreenBitmap = Bitmap.createBitmap(canvas.getWidth(), canvas.getHeight(), Bitmap.Config.ARGB_8888);
@@ -70,21 +74,4 @@ public class FooterView extends FrameLayout {
          canvas.drawBitmap(offscreenBitmap, 0f, 0f, paint);
          */
     }
-
-    private Bitmap createMask(int width, int height) {
-        Bitmap mask = Bitmap.createBitmap(width, height, Bitmap.Config.ALPHA_8);
-        Canvas canvas = new Canvas(mask);
-
-        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        paint.setColor(Color.WHITE);
-
-        canvas.drawRect(0, 0, width, height, paint);
-
-        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
-        canvas.drawRoundRect(new RectF(0, 0, width, height), cornerRadius, cornerRadius, paint);
-
-        return mask;
-    }
-
-
 }

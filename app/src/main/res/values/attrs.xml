@@ -13,7 +13,12 @@
         <attr name="footerLayout" format="reference" />
     </declare-styleable>
     <declare-styleable name="PassCardLayout2">
-        <attr name="headerLayout"/>
+        <attr name="headerLayout" />
         <attr name="footerLayout" />
+    </declare-styleable>
+    <declare-styleable name="CustomLayoutLP">
+        <attr name="android:layout_gravity" />
+        <attr name="headerColor" />
+        <attr name="footerColor" />
     </declare-styleable>
 </resources>
