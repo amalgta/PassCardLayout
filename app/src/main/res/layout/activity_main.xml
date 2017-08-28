@@ -12,28 +12,29 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <com.flytxt.mobile.passcardlayout.ui.CustomLayout
+        <com.flytxt.mobile.passcardlayout.ui.PassCardLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             app:footerColor="#00ff00"
+            app:circleRadius="6dp"
             app:headerColor="#ff0000">
 
             <TextView
                 android:layout_width="match_parent"
-                android:layout_height="300dp"
+                android:layout_height="150dp"
                 android:gravity="center"
                 android:text="lasdasdkjjjjjjjjjjjas1"
                 android:textColor="#ffffff" />
 
             <TextView
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="wrap_content"
                 android:gravity="center"
                 android:text="r1ss"
                 android:textColor="#ffffff" />
 
-        </com.flytxt.mobile.passcardlayout.ui.CustomLayout>
+        </com.flytxt.mobile.passcardlayout.ui.PassCardLayout>
     </LinearLayout>
 
 </ScrollView>

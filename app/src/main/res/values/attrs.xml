@@ -6,7 +6,7 @@
         <attr name="headerColor" format="color" />
         <attr name="footerColor" format="color" />
     </declare-styleable>
-    <declare-styleable name="PassCardLayout">
+    <declare-styleable name="PassCardLayout3">
         <attr name="headerColor" />
         <attr name="footerColor" />
         <attr name="headerLayout" format="reference" />
@@ -16,9 +16,11 @@
         <attr name="headerLayout" />
         <attr name="footerLayout" />
     </declare-styleable>
-    <declare-styleable name="CustomLayoutLP">
+    <declare-styleable name="PassCardLayout">
         <attr name="android:layout_gravity" />
         <attr name="headerColor" />
+        <attr name="circleRadius" />
+        <attr name="customPadding" />
         <attr name="footerColor" />
     </declare-styleable>
 </resources>
