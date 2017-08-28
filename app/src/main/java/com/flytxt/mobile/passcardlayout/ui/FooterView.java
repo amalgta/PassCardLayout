@@ -9,6 +9,7 @@ import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
+import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
@@ -19,10 +20,11 @@ import android.widget.FrameLayout;
  */
 
 public class FooterView extends FrameLayout {
-    private final static float CORNER_RADIUS = 40.0f;
+    private final static float CORNER_RADIUS = 20.0f;
+    private Path stencilPath = new Path();
 
     private Bitmap maskBitmap;
-    private Paint paint, maskPaint;
+    private Paint paint;
     private float cornerRadius;
 
     public FooterView(Context context) {
@@ -37,18 +39,31 @@ public class FooterView extends FrameLayout {
 
     public FooterView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        init(context, attrs, defStyle);
+        init(context, attrs, 0);
+    }
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        // compute the path
+        stencilPath.reset();
+        //stencilPath.addRoundRect(0, 0, w, h, cornerRadius, cornerRadius, Path.Direction.CW);
+        stencilPath=Utils.RoundedRect(0, 0, w, h, cornerRadius, cornerRadius, false, false, true, true);
+        stencilPath.close();
+    }
+
+    @Override
+    protected void dispatchDraw(@NonNull Canvas canvas) {
+        int save = canvas.save();
+        canvas.clipPath(stencilPath);
+        super.dispatchDraw(canvas);
+        canvas.restoreToCount(save);
     }
 
     private void init(Context context, AttributeSet attrs, int defStyle) {
         DisplayMetrics metrics = context.getResources().getDisplayMetrics();
         cornerRadius = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, CORNER_RADIUS, metrics);
-
         paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-
-        maskPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG);
-        maskPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
-
         setWillNotDraw(false);
     }
 
@@ -58,20 +73,7 @@ public class FooterView extends FrameLayout {
 
     @Override
     public void draw(Canvas canvas) {
-        Bitmap offscreenBitmap = Bitmap.createBitmap(canvas.getWidth(), canvas.getHeight(), Bitmap.Config.ARGB_8888);
-        //Canvas offscreenCanvas = new Canvas(offscreenBitmap);
-
-        //super.draw(offscreenCanvas);
-
-        canvas.drawPath(Utils.RoundedRect(0, 0, canvas.getWidth(), canvas.getHeight(), CORNER_RADIUS, CORNER_RADIUS, false, false, true, true), paint);
+       // canvas.drawPath(Utils.RoundedRect(0, 0, canvas.getWidth(), canvas.getHeight(), cornerRadius, cornerRadius, false, false, true, true), paint);
         super.draw(canvas);
-        /**
-         if (maskBitmap == null) {
-         maskBitmap = createMask(canvas.getWidth(), canvas.getHeight());
-         }
-
-         offscreenCanvas.drawBitmap(maskBitmap, 0f, 0f, maskPaint);
-         canvas.drawBitmap(offscreenBitmap, 0f, 0f, paint);
-         */
     }
 }

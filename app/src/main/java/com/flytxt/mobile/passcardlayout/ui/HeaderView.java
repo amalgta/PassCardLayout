@@ -8,7 +8,10 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.drawable.BitmapDrawable;
+import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
@@ -19,15 +22,34 @@ import android.widget.FrameLayout;
  */
 
 public class HeaderView extends FrameLayout {
-    private final static float CORNER_RADIUS = 40.0f;
+    private final static float CORNER_RADIUS = 20.0f;
 
-    private Bitmap maskBitmap;
-    private Paint paint, maskPaint;
+    private Path stencilPath = new Path();
+
+    private Paint paint;
     private float cornerRadius;
 
     public HeaderView(Context context) {
         super(context);
         init(context, null, 0);
+    }
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        // compute the path
+        stencilPath.reset();
+        //stencilPath.addRoundRect(0, 0, w, h, cornerRadius, cornerRadius, Path.Direction.CW);
+        stencilPath=Utils.RoundedRect(0, 0, w, h, cornerRadius, cornerRadius, true, true, false, false);
+        stencilPath.close();
+    }
+
+    @Override
+    protected void dispatchDraw(@NonNull Canvas canvas) {
+        int save = canvas.save();
+        canvas.clipPath(stencilPath);
+        super.dispatchDraw(canvas);
+        canvas.restoreToCount(save);
     }
 
     public HeaderView(Context context, AttributeSet attrs) {
@@ -43,12 +65,7 @@ public class HeaderView extends FrameLayout {
     private void init(Context context, AttributeSet attrs, int defStyle) {
         DisplayMetrics metrics = context.getResources().getDisplayMetrics();
         cornerRadius = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, CORNER_RADIUS, metrics);
-
         paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-
-        maskPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG);
-        maskPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
-
         setWillNotDraw(false);
     }
 
@@ -58,20 +75,19 @@ public class HeaderView extends FrameLayout {
 
     @Override
     public void draw(Canvas canvas) {
-        Bitmap offscreenBitmap = Bitmap.createBitmap(canvas.getWidth(), canvas.getHeight(), Bitmap.Config.ARGB_8888);
-        //Canvas offscreenCanvas = new Canvas(offscreenBitmap);
+        //Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
-        //super.draw(offscreenCanvas);
+        //canvas.drawARGB(0, 0, 0, 0);
+        //Rect rect = new Rect(0, 0, canvas.getWidth(), canvas.getHeight());
+        //RectF rectF = new RectF(rect);
 
-        canvas.drawPath(Utils.RoundedRect(0, 0, canvas.getWidth(), canvas.getHeight(), CORNER_RADIUS, CORNER_RADIUS, true, true, false, false), paint);
+        //paint.setColor(Color.BLACK);
+        //canvas.drawRoundRect(rectF, CORNER_RADIUS, CORNER_RADIUS, paint);
+
+        //paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        //paint.setXfermode(null);
+
+        //canvas.drawPath();
         super.draw(canvas);
-        /**
-         if (maskBitmap == null) {
-         maskBitmap = createMask(canvas.getWidth(), canvas.getHeight());
-         }
-
-         offscreenCanvas.drawBitmap(maskBitmap, 0f, 0f, maskPaint);
-         canvas.drawBitmap(offscreenBitmap, 0f, 0f, paint);
-         */
     }
 }

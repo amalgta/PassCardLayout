@@ -199,16 +199,17 @@ public class PassCardLayout extends ViewGroup {
         switch (getChildCount()) {
             case 0:
                 headerLayout.setId(R.id.headerLayout);
-                headerLayout.setPadding(20, 20, 20, 20);
+                //headerLayout.setPadding(20, 20, 20, 20);
                 headerLayout.addView(view);
                 return headerLayout;
             case 1:
                 footerLayout.setId(R.id.footerLayout);
-                footerLayout.setPadding(20, 20, 20, 20);
+                //footerLayout.setPadding(20, 20, 20, 20);
                 footerLayout.addView(view);
                 return footerLayout;
         }
         return view;
+
     }
 
     /**
