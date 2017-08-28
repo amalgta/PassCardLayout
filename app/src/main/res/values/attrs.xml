@@ -5,6 +5,8 @@
         <attr name="customPadding" format="dimension" />
         <attr name="headerColor" format="color" />
         <attr name="footerColor" format="color" />
+        <attr name="dividerColor" format="color" />
+        <attr name="dividerWidth" format="dimension" />
     </declare-styleable>
     <declare-styleable name="PassCardLayout3">
         <attr name="headerColor" />
@@ -18,9 +20,14 @@
     </declare-styleable>
     <declare-styleable name="PassCardLayout">
         <attr name="android:layout_gravity" />
+        <attr name="dividerColor" />
+        <attr name="dividerWidth" />
         <attr name="headerColor" />
         <attr name="circleRadius" />
         <attr name="customPadding" />
         <attr name="footerColor" />
+    </declare-styleable>
+    <declare-styleable name="RoundCornerFrameLayout">
+        <attr name="corner_radius" format="dimension" />
     </declare-styleable>
 </resources>

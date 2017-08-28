@@ -1,4 +1,4 @@
-package com.flytxt.mobile.passcardlayout.ui;
+package com.flytxt.mobile.passcardlayout.reference;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -12,6 +12,8 @@ import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
 import com.flytxt.mobile.passcardlayout.R;
+import com.flytxt.mobile.passcardlayout.ui.PassCardInternalContainer;
+import com.flytxt.mobile.passcardlayout.ui.MedianView;
 
 /**
  * Created by amalg on 25-08-2017.
@@ -63,7 +65,7 @@ public class PassCardLayout3 extends RelativeLayout {
             typedArray.recycle();
         }
 
-        headerLayout = new HeaderView(getContext());
+        headerLayout = new PassCardInternalContainer(getContext());
         //headerLayout = (FrameLayout) inflate(getContext(), R.layout.pass_card_header, null);
 
         medianLayout = new MedianView(getContext());

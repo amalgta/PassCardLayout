@@ -7,10 +7,7 @@ import android.graphics.Color;
 import android.graphics.DashPathEffect;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
-import android.graphics.RectF;
 import android.graphics.Region;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -28,13 +25,14 @@ public class MedianView extends View {
     interface Defaults {
         int headerColor = Color.GREEN;
         int footerColor = Color.RED;
+        int dividerColor = Color.BLACK;
     }
 
-    private int circleRadius, customPadding;
+    private int circleRadius, customPadding, dividerWidth;
 
-    private Paint headerPaint, footerPaint;
+    private Paint headerPaint, footerPaint, centerDividerPaint;
 
-    private int headerColor, footerColor;
+    private int headerColor, footerColor, dividerColor;
 
     public MedianView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -46,6 +44,18 @@ public class MedianView extends View {
         init(null);
     }
 
+    public void setDividerColor(int dividerColor) {
+        this.dividerColor = dividerColor;
+        centerDividerPaint.setColor(dividerColor);
+        invalidate();
+    }
+
+    public void setDividerWidth(int dividerWidth) {
+        this.dividerWidth = dividerWidth;
+        centerDividerPaint.setStrokeWidth(dividerWidth);
+        invalidate();
+    }
+
     private void init(AttributeSet attrs) {
         setSaveEnabled(true);
         if (attrs != null) {
@@ -54,6 +64,8 @@ public class MedianView extends View {
             footerColor = ta.getColor(R.styleable.MedianView_footerColor, Defaults.footerColor);
             circleRadius = ta.getDimensionPixelSize(R.styleable.MedianView_circleRadius, 0);
             customPadding = ta.getDimensionPixelSize(R.styleable.MedianView_customPadding, 0);
+            dividerColor = ta.getColor(R.styleable.MedianView_dividerColor, Defaults.dividerColor);
+            dividerWidth = ta.getDimensionPixelSize(R.styleable.MedianView_dividerWidth, 0);
             ta.recycle();
         }
         headerPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -61,6 +73,14 @@ public class MedianView extends View {
 
         footerPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         footerPaint.setColor(footerColor);
+
+        centerDividerPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        centerDividerPaint.setStrokeWidth(dividerWidth);
+        centerDividerPaint.setARGB(255, 0, 0, 0);
+        setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        centerDividerPaint.setStyle(Paint.Style.STROKE);
+        centerDividerPaint.setPathEffect(new DashPathEffect(new float[]{8, 8}, 0));
+        centerDividerPaint.setColor(dividerColor);
     }
 
     public void setCircleRadius(int circleRadius) {
@@ -104,18 +124,11 @@ public class MedianView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        drawBar(canvas);
+        drawMedian(canvas);
     }
 
-    private void drawBar(Canvas canvas) {
-        Rect maxValueRect = new Rect();
-
+    private void drawMedian(Canvas canvas) {
         float barCenter = getBarCenter();
-
-        float left = getPaddingLeft();
-        float right = getPaddingRight();
-        //RectF rectF = new RectF(0, 0, getWidth(), getHeight());
-        //canvas.drawRect(rectF, footerPaint);
 
         Path p = new Path();
         p.addCircle(0, barCenter, circleRadius, Path.Direction.CW);
@@ -133,54 +146,10 @@ public class MedianView extends View {
         p2.addRect(0, getHeight() / 2, getWidth(), getHeight(), Path.Direction.CW);
         canvas.drawPath(p2, footerPaint);
 
-        // canvas.drawLine(circleRadius * 2 + 10, getBarCenter(), getWidth() - circleRadius * 2 - 10, getBarCenter(), fgPaintSel);
-        //canvas.drawCircle(0, barCenter, circleRadius, p);
-        //canvas.drawCircle(getWidth(), barCenter, circleRadius, p);
+        canvas.drawLine(circleRadius * 2 + 12, getBarCenter(), getWidth() - circleRadius * 2 - 12, getBarCenter(), centerDividerPaint);
     }
 
     private float getBarCenter() {
         return (float) ((getHeight() - getPaddingTop() - getPaddingBottom()) / 2);
-    }
-
-    @Override
-    public Parcelable onSaveInstanceState() {
-        Parcelable superState = super.onSaveInstanceState();
-        return new SavedState(superState);
-    }
-
-    @Override
-    public void onRestoreInstanceState(Parcelable state) {
-        SavedState ss = (SavedState) state;
-        super.onRestoreInstanceState(ss.getSuperState());
-    }
-
-    private static class SavedState extends BaseSavedState {
-        int value;
-
-        SavedState(Parcelable superState) {
-            super(superState);
-        }
-
-        private SavedState(Parcel in) {
-            super(in);
-            value = in.readInt();
-        }
-
-        @Override
-        public void writeToParcel(Parcel out, int flags) {
-            super.writeToParcel(out, flags);
-            out.writeInt(value);
-        }
-
-        public static final Parcelable.Creator<SavedState> CREATOR
-                = new Parcelable.Creator<SavedState>() {
-            public SavedState createFromParcel(Parcel in) {
-                return new SavedState(in);
-            }
-
-            public SavedState[] newArray(int size) {
-                return new SavedState[size];
-            }
-        };
     }
 }

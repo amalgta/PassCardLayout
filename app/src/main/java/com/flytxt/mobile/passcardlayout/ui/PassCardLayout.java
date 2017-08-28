@@ -19,7 +19,7 @@ import com.flytxt.mobile.passcardlayout.R;
 
 @RemoteViews.RemoteView
 public class PassCardLayout extends ViewGroup {
-    int headerColor, footerColor;
+    int headerColor, footerColor, dividerColor, dividerWidth;
     private int circleRadius, customPadding;
 
     interface Defaults {
@@ -27,20 +27,9 @@ public class PassCardLayout extends ViewGroup {
         int footerColor = Color.RED;
     }
 
-    private HeaderView headerLayout;
-    private FooterView footerLayout;
+    private PassCardInternalContainer internalHeader, internalFooter;
 
     private MedianView medianView;
-
-    /**
-     * The amount of space used by children in the left gutter.
-     */
-    private int mLeftWidth;
-
-    /**
-     * The amount of space used by children in the right gutter.
-     */
-    private int mRightWidth;
 
     /**
      * These are used for computing child frames based on their gravity.
@@ -69,58 +58,37 @@ public class PassCardLayout extends ViewGroup {
             footerColor = typedArray.getColor(R.styleable.PassCardLayout_footerColor, PassCardLayout.Defaults.footerColor);
             circleRadius = typedArray.getDimensionPixelSize(R.styleable.PassCardLayout_circleRadius, 10);
             customPadding = typedArray.getDimensionPixelSize(R.styleable.PassCardLayout_customPadding, 10);
+            dividerColor = typedArray.getColor(R.styleable.PassCardLayout_dividerColor, MedianView.Defaults.dividerColor);
+            dividerWidth = typedArray.getDimensionPixelSize(R.styleable.PassCardLayout_dividerWidth, 8);
             typedArray.recycle();
         }
 
-        headerLayout = new HeaderView(getContext());
-        headerLayout.setColor(headerColor);
-        headerLayout.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+        internalHeader = new PassCardInternalContainer(getContext());
+        internalHeader.setMode(PassCardInternalContainer.Mode.Header);
+        internalHeader.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 
         medianView = new MedianView(getContext());
         medianView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
         medianView.setCircleRadius(circleRadius);
         medianView.setCustomPadding(customPadding);
+        medianView.setDividerWidth(dividerWidth);
+        medianView.setDividerColor(Color.BLACK);
         medianView.setHeaderColor(headerColor);
         medianView.setFooterColor(footerColor);
 
-        footerLayout = new FooterView(getContext());
-        footerLayout.setColor(footerColor);
-        footerLayout.setLayoutParams(new LayoutParams(MarginLayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-    }
-
-    @Override
-    protected boolean addViewInLayout(View child, int index, ViewGroup.LayoutParams params, boolean preventRequestLayout) {
-        return super.addViewInLayout(setChildren(child), index, params, preventRequestLayout);
-    }
-
-    @Override
-    public void addView(View child) {
-        super.addView(setChildren(child));
+        internalFooter = new PassCardInternalContainer(getContext());
+        internalFooter.setMode(PassCardInternalContainer.Mode.Footer);
+        internalFooter.setLayoutParams(new LayoutParams(MarginLayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
     }
 
     @Override
     public void addView(View child, int index, ViewGroup.LayoutParams params) {
-        super.addView(setChildren(child), index, params);
-    }
-
-    @Override
-    public void addView(View child, int index) {
-        super.addView(setChildren(child), index);
+        super.addView(addToContainerView(child), index, params);
     }
 
     @Override
     public void addView(View child, ViewGroup.LayoutParams params) {
-        super.addView(setChildren(child), params);
-    }
-
-    @Override
-    public void addView(View child, int width, int height) {
-        super.addView(setChildren(child), width, height);
-    }
-
-    @Override
-    protected boolean addViewInLayout(View child, int index, ViewGroup.LayoutParams params) {
-        return super.addViewInLayout(setChildren(child), index, params);
+        super.addView(addToContainerView(child), params);
     }
 
     /**
@@ -140,14 +108,6 @@ public class PassCardLayout extends ViewGroup {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int count = getChildCount();
 
-        /*
-        These keep track of the space we are using on the left and right for
-        views positioned there; we need member variables so we can also use
-        these for layout later.
-        */
-        mLeftWidth = 0;
-        mRightWidth = 0;
-
         /* Measurement will ultimately be computing these values. */
         int maxHeight = 0;
         int maxWidth = 0;
@@ -165,6 +125,7 @@ public class PassCardLayout extends ViewGroup {
 
                 //Update our size information based on the layout params.  Children
                 //that asked to be positioned on the left or right go in those gutters.
+
                 final LayoutParams lp = (LayoutParams) child.getLayoutParams();
                 int childHeight = child.getMeasuredHeight() + lp.topMargin + lp.bottomMargin;
                 int childWidth = child.getMeasuredWidth() + lp.leftMargin + lp.rightMargin;
@@ -193,20 +154,20 @@ public class PassCardLayout extends ViewGroup {
         addView(medianView, 1);
     }
 
-    private View setChildren(View view) {
-        if (view instanceof HeaderView || view instanceof MedianView || view instanceof FooterView)
+    private View addToContainerView(View view) {
+        if (view instanceof PassCardInternalContainer || view instanceof MedianView)
             return view;
         switch (getChildCount()) {
             case 0:
-                headerLayout.setId(R.id.headerLayout);
-                //headerLayout.setPadding(20, 20, 20, 20);
-                headerLayout.addView(view);
-                return headerLayout;
+                internalHeader.setId(R.id.headerLayout);
+                view.setBackgroundColor(headerColor);
+                internalHeader.addView(view);
+                return internalHeader;
             case 1:
-                footerLayout.setId(R.id.footerLayout);
-                //footerLayout.setPadding(20, 20, 20, 20);
-                footerLayout.addView(view);
-                return footerLayout;
+                internalFooter.setId(R.id.footerLayout);
+                view.setBackgroundColor(footerColor);
+                internalFooter.addView(view);
+                return internalFooter;
         }
         return view;
 
@@ -219,6 +180,8 @@ public class PassCardLayout extends ViewGroup {
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         final int count = getChildCount();
 
+        if (getChildCount() != 3)
+            throw new IllegalStateException("PassCardLayout can only hold two direct subchilds.");
 
         // These are the far left and right edges in which we are performing layout.
         int leftPos = getPaddingLeft();
@@ -237,7 +200,6 @@ public class PassCardLayout extends ViewGroup {
 
                 final int width = child.getMeasuredWidth();
                 final int height = child.getMeasuredHeight();
-
 
                 mTmpContainerRect.left = leftPos + lp.leftMargin;
                 mTmpContainerRect.right = rightPos - lp.rightMargin;
@@ -260,8 +222,6 @@ public class PassCardLayout extends ViewGroup {
         }
 
     }
-
-
 
     /*
     ----------------------------------------------------------------------

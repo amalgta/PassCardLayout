@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#F0C713"
     tools:context="com.flytxt.mobile.passcardlayout.MainActivity">
 
     <LinearLayout
@@ -15,22 +16,37 @@
         <com.flytxt.mobile.passcardlayout.ui.PassCardLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:circleRadius="6dp"
-            app:footerColor="#87FF74"
-            app:headerColor="#2CD6BC">
+            app:circleRadius="15dp"
+            app:footerColor="#52BE80"
+            app:dividerWidth="2dp"
+            app:headerColor="#117864">
 
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="centerCrop"
-                android:src="@drawable/card_image" />
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="#10aa22"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/card_image" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:gravity="center"
+                    android:text="Vivegam"
+                    android:textSize="14sp" />
+            </LinearLayout>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:background="#87FF74"
                 android:gravity="center"
-                android:text="Never Give Up"
+                android:text="Never Ever Give Up"
                 android:textColor="#ffffff" />
 
         </com.flytxt.mobile.passcardlayout.ui.PassCardLayout>

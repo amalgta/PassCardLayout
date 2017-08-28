@@ -1,4 +1,4 @@
-package com.flytxt.mobile.passcardlayout.ui;
+package com.flytxt.mobile.passcardlayout.reference;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -14,6 +14,8 @@ import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.widget.FrameLayout;
+
+import com.flytxt.mobile.passcardlayout.ui.Utils;
 
 /**
  * Created by amalg on 26-08-2017.
@@ -45,11 +47,8 @@ public class FooterView extends FrameLayout {
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-        // compute the path
         stencilPath.reset();
-        //stencilPath.addRoundRect(0, 0, w, h, cornerRadius, cornerRadius, Path.Direction.CW);
-        stencilPath=Utils.RoundedRect(0, 0, w, h, cornerRadius, cornerRadius, false, false, true, true);
-        stencilPath.close();
+       // Utils.addRoundedRectBottom(stencilPath, 60, 0, 0, w, h, cornerRadius, cornerRadius, false, false, true, true);
     }
 
     @Override
@@ -73,7 +72,7 @@ public class FooterView extends FrameLayout {
 
     @Override
     public void draw(Canvas canvas) {
-       // canvas.drawPath(Utils.RoundedRect(0, 0, canvas.getWidth(), canvas.getHeight(), cornerRadius, cornerRadius, false, false, true, true), paint);
+        // canvas.drawPath(Utils.RoundedRect(0, 0, canvas.getWidth(), canvas.getHeight(), cornerRadius, cornerRadius, false, false, true, true), paint);
         super.draw(canvas);
     }
 }

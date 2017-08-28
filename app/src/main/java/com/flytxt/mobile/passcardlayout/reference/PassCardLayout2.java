@@ -1,4 +1,4 @@
-package com.flytxt.mobile.passcardlayout.ui;
+package com.flytxt.mobile.passcardlayout.reference;
 
 import android.content.Context;
 import android.content.res.TypedArray;

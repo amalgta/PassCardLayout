@@ -7,52 +7,66 @@ import android.graphics.Path;
  */
 
 public class Utils {
-    public static Path RoundedRect(float left, float top, float right, float bottom, float rx, float ry,
-                                   boolean tl, boolean tr, boolean br, boolean bl) {
-        Path path = new Path();
-        if (rx < 0) rx = 0;
-        if (ry < 0) ry = 0;
+       public static Path addRoundedRect(Path path,
+                                            float left, float top, float right, float bottom,
+                                            float radiusX, float radiusY,
+                                            boolean topLeft, boolean topRight, boolean bottomRight, boolean bottomLeft) {
+
+        if (radiusX < 0) radiusX = 0;
+        if (radiusY < 0) radiusY = 0;
         float width = right - left;
         float height = bottom - top;
-        if (rx > width / 2) rx = width / 2;
-        if (ry > height / 2) ry = height / 2;
-        float widthMinusCorners = (width - (2 * rx));
-        float heightMinusCorners = (height - (2 * ry));
+        if (radiusX > width / 2) radiusX = width / 2;
+        if (radiusY > height / 2) radiusY = height / 2;
+        float widthMinusCorners = (width - (2 * radiusX));
+        float heightMinusCorners = (height - (2 * radiusY));
 
-        path.moveTo(right, top + ry);
-        if (tr)
-            path.rQuadTo(0, -ry, -rx, -ry);//top-right corner
+        path.moveTo(right, top + radiusY);
+
+
+        if (topRight)
+            //top-right corner
+            path.rQuadTo(0, -radiusY, -radiusX, -radiusY);
         else {
-            path.rLineTo(0, -ry);
-            path.rLineTo(-rx, 0);
+            path.rLineTo(0, -radiusY);
+            path.rLineTo(-radiusX, 0);
         }
+
         path.rLineTo(-widthMinusCorners, 0);
-        if (tl)
-            path.rQuadTo(-rx, 0, -rx, ry); //top-left corner
+
+
+        if (topLeft)
+            //top-left corner
+            path.rQuadTo(-radiusX, 0, -radiusX, radiusY);
         else {
-            path.rLineTo(-rx, 0);
-            path.rLineTo(0, ry);
+            path.rLineTo(-radiusX, 0);
+            path.rLineTo(0, radiusY);
         }
+
         path.rLineTo(0, heightMinusCorners);
 
-        if (bl)
-            path.rQuadTo(0, ry, rx, ry);//bottom-left corner
+        if (bottomLeft)
+            //bottom-left corner
+            path.rQuadTo(0, radiusY, radiusX, radiusY);
         else {
-            path.rLineTo(0, ry);
-            path.rLineTo(rx, 0);
+            path.rLineTo(0, radiusY);
+            path.rLineTo(radiusX, 0);
         }
 
         path.rLineTo(widthMinusCorners, 0);
-        if (br)
-            path.rQuadTo(rx, 0, rx, -ry); //bottom-right corner
+
+        if (bottomRight)
+            //bottom-right corner
+            path.rQuadTo(radiusX, 0, radiusX, -radiusY);
         else {
-            path.rLineTo(rx, 0);
-            path.rLineTo(0, -ry);
+            path.rLineTo(radiusX, 0);
+            path.rLineTo(0, -radiusY);
         }
 
         path.rLineTo(0, -heightMinusCorners);
 
-        path.close();//Given close, last lineto can be removed.
+        path.close();
+        //Given close, last lineTo can be removed.
 
         return path;
     }
