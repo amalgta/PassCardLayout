@@ -18,7 +18,7 @@ public class PassCardInternalContainer extends FrameLayout {
     private Path stencilPath = new Path();
     private float cornerRadius;
 
-    public enum Mode {Header, Footer}
+    enum Mode {Header, Footer}
 
     /**
      * Default mode is header
@@ -28,6 +28,11 @@ public class PassCardInternalContainer extends FrameLayout {
     public PassCardInternalContainer(Context context) {
         super(context);
         init(context, null, 0);
+    }
+
+    public void setCornerRadius(float cornerRadius) {
+        DisplayMetrics metrics = getContext().getResources().getDisplayMetrics();
+        this.cornerRadius = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, cornerRadius, metrics);
     }
 
     public void setMode(Mode mode) {

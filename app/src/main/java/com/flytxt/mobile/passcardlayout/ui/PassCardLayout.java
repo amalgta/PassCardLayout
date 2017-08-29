@@ -5,11 +5,16 @@ import android.content.res.TypedArray;
 import android.graphics.BlurMaskFilter;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.RadialGradient;
 import android.graphics.Rect;
+import android.graphics.Shader;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,11 +31,13 @@ import com.flytxt.mobile.passcardlayout.R;
 public class PassCardLayout extends ViewGroup {
     Paint shadowPaint;
     Path shadowPath;
-    Paint paint;
-    int shadowOffset = 20;
+
+    int shadowRadius;
+    private float circleRadius;
+    float cornerRadius;
 
     int headerColor, footerColor, dividerColor, dividerWidth;
-    private int circleRadius, customPadding;
+    private int customPadding;
 
     interface Defaults {
         int headerColor = Color.GREEN;
@@ -55,33 +62,26 @@ public class PassCardLayout extends ViewGroup {
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
         shadowPath.reset();
-        // h - shadowOffset
-        //w,h,heightHeader,circleRadius,heightFooter
         Utils.addRoundedRect3(shadowPath,
-                shadowOffset, shadowOffset, w - shadowOffset, h - shadowOffset,
-                60.0f, 60.0f, internalHeader.getMeasuredHeight() - 2 * shadowOffset-10, circleRadius, internalFooter.getMeasuredHeight() - 2 * shadowOffset-10);
+                shadowRadius, shadowRadius, w - shadowRadius, h - shadowRadius,
+                60.0f, 60.0f, internalHeader.getMeasuredHeight() - 2 * shadowRadius - 10, circleRadius, internalFooter.getMeasuredHeight() - 2 * shadowRadius - 10);
     }
 
     @Override
     protected void dispatchDraw(@NonNull Canvas canvas) {
-        int save = canvas.save();
-        //paint.setShader(null);
-        //float adjust = (.0095f * getHeight() / 2);
-        //paint.setShadowLayer(8, adjust, -adjust, 0xaa000000);.
         if (!isInEditMode()) {
-            shadowPaint = new Paint();
-            shadowPaint.setColor(0xf0000000);
-            shadowPaint.setStyle(Paint.Style.STROKE);
-            shadowPaint.setAntiAlias(true);
-            setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-
-            shadowPaint.setStrokeWidth(4.0f);
-            shadowPaint.setMaskFilter(new BlurMaskFilter(4, BlurMaskFilter.Blur.NORMAL));
+            int save = canvas.save();
+            int[] rainbow = new int[]{Color.BLUE, Color.GRAY};
+            Shader shader = new RadialGradient(canvas.getHeight() / 2,
+                    canvas.getWidth() / 2,
+                    Math.max(canvas.getHeight(), canvas.getWidth()), rainbow, null, Shader.TileMode.CLAMP);
+            shadowPaint.setShader(shader);
             canvas.drawPath(shadowPath, shadowPaint);
+            super.dispatchDraw(canvas);
+            canvas.restoreToCount(save);
+        } else {
+            super.dispatchDraw(canvas);
         }
-        //canvas.clipPath(shadowPath);
-        super.dispatchDraw(canvas);
-        canvas.restoreToCount(save);
     }
 
     public PassCardLayout(Context context, AttributeSet attrs) {
@@ -99,15 +99,20 @@ public class PassCardLayout extends ViewGroup {
             TypedArray typedArray = getContext().obtainStyledAttributes(attrs, R.styleable.PassCardLayout);
             headerColor = typedArray.getColor(R.styleable.PassCardLayout_headerColor, PassCardLayout.Defaults.headerColor);
             footerColor = typedArray.getColor(R.styleable.PassCardLayout_footerColor, PassCardLayout.Defaults.footerColor);
+            dividerColor = typedArray.getColor(R.styleable.PassCardLayout_dividerColor, MedianView.Defaults.dividerColor);
+
             circleRadius = typedArray.getDimensionPixelSize(R.styleable.PassCardLayout_circleRadius, 10);
             customPadding = typedArray.getDimensionPixelSize(R.styleable.PassCardLayout_customPadding, 10);
-            dividerColor = typedArray.getColor(R.styleable.PassCardLayout_dividerColor, MedianView.Defaults.dividerColor);
+            cornerRadius = typedArray.getDimensionPixelSize(R.styleable.PassCardLayout_cornerRadius, 20);
+            shadowRadius = typedArray.getDimensionPixelSize(R.styleable.PassCardLayout_shadowRadius, 20);
             dividerWidth = typedArray.getDimensionPixelSize(R.styleable.PassCardLayout_dividerWidth, 8);
+
             typedArray.recycle();
         }
 
         internalHeader = new PassCardInternalContainer(getContext());
         internalHeader.setMode(PassCardInternalContainer.Mode.Header);
+        internalHeader.setCornerRadius(cornerRadius);
         internalHeader.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 
         medianView = new MedianView(getContext());
@@ -115,26 +120,22 @@ public class PassCardLayout extends ViewGroup {
         medianView.setCircleRadius(circleRadius);
         medianView.setCustomPadding(customPadding);
         medianView.setDividerWidth(dividerWidth);
-        medianView.setDividerColor(Color.BLACK);
+        medianView.setDividerColor(dividerColor);
         medianView.setHeaderColor(headerColor);
         medianView.setFooterColor(footerColor);
 
         internalFooter = new PassCardInternalContainer(getContext());
         internalFooter.setMode(PassCardInternalContainer.Mode.Footer);
+        internalFooter.setCornerRadius(cornerRadius);
         internalFooter.setLayoutParams(new LayoutParams(MarginLayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 
-
-//        paint = new Paint();
-//        paint.setDither(true);
-//        paint.setStyle(Paint.Style.FILL);
-//        paint.setStrokeJoin(Paint.Join.ROUND);
-//        paint.setStrokeCap(Paint.Cap.ROUND);
-//        paint.setAntiAlias(true);
-//        paint.setStrokeWidth(1.0f);
-
-
         shadowPath = new Path();
-
+        shadowPaint = new Paint();
+        shadowPaint.setStyle(Paint.Style.STROKE);
+        shadowPaint.setAntiAlias(true);
+        setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        shadowPaint.setStrokeWidth(5.0f);
+        shadowPaint.setMaskFilter(new BlurMaskFilter(3, BlurMaskFilter.Blur.SOLID));
     }
 
     @Override
@@ -195,8 +196,8 @@ public class PassCardLayout extends ViewGroup {
             }
         }
         /* Check against our minimum height and width */
-        maxHeight = Math.max(maxHeight + 2 * shadowOffset, getSuggestedMinimumHeight());
-        maxWidth = Math.max(maxWidth + 2 * shadowOffset, getSuggestedMinimumWidth());
+        maxHeight = Math.max(maxHeight + 2 * shadowRadius, getSuggestedMinimumHeight());
+        maxWidth = Math.max(maxWidth + 2 * shadowRadius, getSuggestedMinimumWidth());
 
         /* Report our final dimensions. */
         setMeasuredDimension(resolveSizeAndState(maxWidth, widthMeasureSpec, childState),
@@ -240,12 +241,12 @@ public class PassCardLayout extends ViewGroup {
             throw new IllegalStateException("PassCardLayout can only hold two direct subchilds.");
 
         // These are the far left and right edges in which we are performing layout.
-        int leftPos = getPaddingLeft() + shadowOffset;
-        int rightPos = right - left - getPaddingRight() -shadowOffset;
+        int leftPos = getPaddingLeft() + shadowRadius;
+        int rightPos = right - left - getPaddingRight() - shadowRadius;
 
         // These are the top and bottom edges in which we are performing layout.
-        final int parentTop = getPaddingTop() + shadowOffset;
-        final int parentBottom = bottom - top - getPaddingBottom();
+        final int parentTop = getPaddingTop() + shadowRadius;
+        final int parentBottom = bottom - top - getPaddingBottom() - shadowRadius;
 
         int currentHeight = 0;
 
@@ -262,10 +263,11 @@ public class PassCardLayout extends ViewGroup {
 
                 mTmpContainerRect.top = parentTop + currentHeight + lp.topMargin;
                 currentHeight = mTmpContainerRect.bottom = mTmpContainerRect.top + height + lp.bottomMargin;
-                currentHeight -= shadowOffset;
+                currentHeight -= shadowRadius;
 
                 // mTmpContainerRect.top = parentTop + lp.topMargin;
                 // mTmpContainerRect.bottom = parentBottom - lp.bottomMargin;
+
                 //Use the child's gravity and size to determine its final
                 //frame within its container.
 
@@ -273,8 +275,8 @@ public class PassCardLayout extends ViewGroup {
 
                 //Place the child.
                 //TODO elimintae if posstivle shadow
-                child.layout(mTmpChildRect.left + shadowOffset, mTmpChildRect.top,
-                        mTmpChildRect.right - shadowOffset, mTmpChildRect.bottom);
+                child.layout(mTmpChildRect.left + shadowRadius, mTmpChildRect.top,
+                        mTmpChildRect.right - shadowRadius, mTmpChildRect.bottom);
             }
         }
 
@@ -316,7 +318,7 @@ public class PassCardLayout extends ViewGroup {
          * The gravity to apply with the View to which these layout parameters
          * are associated.
          */
-        public int gravity = Gravity.CENTER | Gravity.CENTER;
+        public int gravity = Gravity.CENTER;
 
 
         public LayoutParams(Context c, AttributeSet attrs) {

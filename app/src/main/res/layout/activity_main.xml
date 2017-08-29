@@ -10,16 +10,16 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="10dp">
+        android:orientation="vertical">
 
         <com.flytxt.mobile.passcardlayout.ui.PassCardLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:circleRadius="15dp"
+            app:circleRadius="10dp"
             app:dividerWidth="2dp"
-            app:footerColor="#ffffff"
-            app:headerColor="#ffffff">
+            app:dividerColor="#ffffff"
+            app:footerColor="#52BE80"
+            app:headerColor="#117864">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -28,15 +28,14 @@
 
                 <ImageView
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="260dp"
                     android:background="#10aa22"
                     android:scaleType="centerCrop"
-                    android:visibility="invisible"
-                    android:src="@drawable/thala_vishnu" />
+                    android:src="@drawable/card_image" />
 
                 <TextView
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_margin="10dp"
                     android:gravity="center"
                     android:text="Vivegam"

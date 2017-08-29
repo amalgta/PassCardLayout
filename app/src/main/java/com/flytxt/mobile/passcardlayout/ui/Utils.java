@@ -97,7 +97,7 @@ public class Utils {
         path.rLineTo(0, headerHeight);
 
         path.rQuadTo(circleRadius, 0, circleRadius, circleRadius);
-        path.rQuadTo(0, circleRadius, -circleRadius, circleRadius);
+        path.rQuadTo(0,circleRadius, -circleRadius, circleRadius);
 
         path.rLineTo(0, footerHeight);
 

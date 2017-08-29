@@ -25,6 +25,8 @@
         <attr name="headerColor" />
         <attr name="circleRadius" />
         <attr name="customPadding" />
+        <attr name="cornerRadius" format="dimension" />
+        <attr name="shadowRadius" format="dimension" />
         <attr name="footerColor" />
     </declare-styleable>
     <declare-styleable name="RoundCornerFrameLayout">

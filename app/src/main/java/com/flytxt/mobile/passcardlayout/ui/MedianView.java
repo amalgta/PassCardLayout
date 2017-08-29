@@ -28,7 +28,7 @@ public class MedianView extends View {
         int dividerColor = Color.BLACK;
     }
 
-    private int circleRadius, customPadding, dividerWidth;
+    private float circleRadius, customPadding, dividerWidth;
 
     private Paint headerPaint, footerPaint, centerDividerPaint;
 
@@ -83,7 +83,7 @@ public class MedianView extends View {
         centerDividerPaint.setColor(dividerColor);
     }
 
-    public void setCircleRadius(int circleRadius) {
+    public void setCircleRadius(float circleRadius) {
         this.circleRadius = circleRadius;
         invalidate();
     }
