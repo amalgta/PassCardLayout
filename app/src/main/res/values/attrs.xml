@@ -25,6 +25,7 @@
         <attr name="headerColor" />
         <attr name="circleRadius" />
         <attr name="customPadding" />
+        <attr name="shadowColor" format="color" />
         <attr name="cornerRadius" format="dimension" />
         <attr name="shadowRadius" format="dimension" />
         <attr name="footerColor" />

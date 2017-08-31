@@ -36,12 +36,13 @@ public class PassCardLayout extends ViewGroup {
     private float circleRadius;
     float cornerRadius;
 
-    int headerColor, footerColor, dividerColor, dividerWidth;
+    int headerColor, footerColor, dividerColor,shadowColor, dividerWidth;
     private int customPadding;
 
     interface Defaults {
         int headerColor = Color.GREEN;
         int footerColor = Color.RED;
+        int shadowColor = Color.parseColor("#442C2C2C");
     }
 
     private PassCardInternalContainer internalHeader, internalFooter;
@@ -71,11 +72,14 @@ public class PassCardLayout extends ViewGroup {
     protected void dispatchDraw(@NonNull Canvas canvas) {
         if (!isInEditMode()) {
             int save = canvas.save();
+            /*
             int[] rainbow = new int[]{Color.BLUE, Color.GRAY};
             Shader shader = new RadialGradient(canvas.getHeight() / 2,
                     canvas.getWidth() / 2,
                     Math.max(canvas.getHeight(), canvas.getWidth()), rainbow, null, Shader.TileMode.CLAMP);
             shadowPaint.setShader(shader);
+            */
+            shadowPaint.setColor(shadowColor);
             canvas.drawPath(shadowPath, shadowPaint);
             super.dispatchDraw(canvas);
             canvas.restoreToCount(save);
@@ -99,6 +103,7 @@ public class PassCardLayout extends ViewGroup {
             TypedArray typedArray = getContext().obtainStyledAttributes(attrs, R.styleable.PassCardLayout);
             headerColor = typedArray.getColor(R.styleable.PassCardLayout_headerColor, PassCardLayout.Defaults.headerColor);
             footerColor = typedArray.getColor(R.styleable.PassCardLayout_footerColor, PassCardLayout.Defaults.footerColor);
+            shadowColor = typedArray.getColor(R.styleable.PassCardLayout_shadowColor, PassCardLayout.Defaults.shadowColor);
             dividerColor = typedArray.getColor(R.styleable.PassCardLayout_dividerColor, MedianView.Defaults.dividerColor);
 
             circleRadius = typedArray.getDimensionPixelSize(R.styleable.PassCardLayout_circleRadius, 10);
